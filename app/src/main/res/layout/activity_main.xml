@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#F7F9FC">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Solicitud de Beca"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#1E3A5F"
+            android:layout_marginBottom="20dp" />
+
+        <EditText
+            android:id="@+id/etCurp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="CURP"
+            android:inputType="textCapCharacters"
+            android:backgroundTint="#5B8DEF"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre"
+            android:inputType="textPersonName"
+            android:backgroundTint="#5B8DEF"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etApellidos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Apellidos"
+            android:inputType="textPersonName"
+            android:backgroundTint="#5B8DEF"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etDomicilio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Domicilio"
+            android:inputType="textPostalAddress"
+            android:minLines="2"
+            android:backgroundTint="#5B8DEF"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etIngreso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cantidad de ingreso"
+            android:inputType="numberDecimal"
+            android:backgroundTint="#5B8DEF"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo de beca"
+            android:textStyle="bold"
+            android:textColor="#1E3A5F"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <Spinner
+            android:id="@+id/spTipoBeca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnValidar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Validar"
+                android:backgroundTint="#5B8DEF"
+                android:textColor="@android:color/white" />
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btnLimpiar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Limpiar"
+                android:backgroundTint="#A0AEC0"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

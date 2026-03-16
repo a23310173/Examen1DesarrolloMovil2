@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#F7F9FC">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registro de cita"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="#1E3A5F"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnSeleccionarFecha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Seleccionar fecha"
+        android:backgroundTint="#5B8DEF"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/tvFechaSeleccionada"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fecha: Sin fecha"
+        android:textSize="18sp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:id="@+id/btnSeleccionarHora"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Seleccionar hora"
+        android:backgroundTint="#5B8DEF"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/tvHoraSeleccionada"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hora: Sin hora"
+        android:textSize="18sp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnAgendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Agendar"
+        android:backgroundTint="#1E3A5F"
+        android:textColor="@android:color/white" />
+</LinearLayout>
