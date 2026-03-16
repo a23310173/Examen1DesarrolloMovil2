@@ -10,10 +10,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="BecaPlus"
+        android:text="Becas Primer Parcial"
+        android:textColor="#FFFFFF"
         android:textSize="34sp"
-        android:textStyle="bold"
-        android:textColor="#FFFFFF" />
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
