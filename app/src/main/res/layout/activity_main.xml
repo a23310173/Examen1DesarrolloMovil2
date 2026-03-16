@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:hint="CURP"
             android:inputType="textCapCharacters"
+            android:maxLength="18"
             android:backgroundTint="#5B8DEF"
             android:layout_marginBottom="12dp" />
 
@@ -81,6 +82,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:id="@+id/tvResultado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Estado: pendiente"
+            android:textStyle="bold"
+            android:textColor="#1D4ED8"
+            android:padding="12dp"
+            android:background="#DBEAFE"
+            android:layout_marginBottom="16dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

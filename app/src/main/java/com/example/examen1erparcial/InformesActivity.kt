@@ -37,6 +37,24 @@ class InformesActivity : AppCompatActivity() {
     }
 
     private fun programarAlarma() {
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            if (!alarmManager.canScheduleExactAlarms()) {
+                Toast.makeText(
+                    this,
+                    "Activa el permiso de alarmas exactas en Ajustes",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                val intent = android.content.Intent(
+                    android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                )
+                startActivity(intent)
+                return
+            }
+        }
+
         val intent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             this,
@@ -45,11 +63,10 @@ class InformesActivity : AppCompatActivity() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
         val triggerTime = System.currentTimeMillis() + 10_000
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     triggerTime,
@@ -64,8 +81,12 @@ class InformesActivity : AppCompatActivity() {
             }
 
             Toast.makeText(this, "Alarma programada en 10 segundos", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error al programar alarma: ${e.message}", Toast.LENGTH_LONG).show()
+        } catch (e: SecurityException) {
+            Toast.makeText(
+                this,
+                "No se pudo programar la alarma exacta: permiso denegado",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }

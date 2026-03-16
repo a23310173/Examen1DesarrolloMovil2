@@ -5,6 +5,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.app.AlarmManager
+import android.graphics.Color
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -12,15 +14,13 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etDomicilio: EditText
     private lateinit var etIngreso: EditText
     private lateinit var spTipoBeca: Spinner
+    private lateinit var tvResultado: TextView
     private lateinit var btnValidar: Button
     private lateinit var btnLimpiar: Button
 
@@ -37,22 +38,11 @@ class MainActivity : AppCompatActivity() {
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { granted ->
-        if (!granted) {
-            Toast.makeText(this, "No se concedió permiso para notificaciones", Toast.LENGTH_SHORT).show()
-        }
-    }
+    ) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         initViews()
         setupSpinner()
@@ -70,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         etDomicilio = findViewById(R.id.etDomicilio)
         etIngreso = findViewById(R.id.etIngreso)
         spTipoBeca = findViewById(R.id.spTipoBeca)
+        tvResultado = findViewById(R.id.tvResultado)
         btnValidar = findViewById(R.id.btnValidar)
         btnLimpiar = findViewById(R.id.btnLimpiar)
     }
@@ -79,6 +70,14 @@ class MainActivity : AppCompatActivity() {
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, opciones)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spTipoBeca.adapter = adapter
+    }
+
+    private fun esCurpValida(curp: String): Boolean {
+        return curp.matches(Regex("^[A-Za-z0-9]+$"))
+    }
+
+    private fun soloLetras(texto: String): Boolean {
+        return texto.matches(Regex("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"))
     }
 
     private fun validarSolicitud() {
@@ -96,6 +95,24 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        if (!esCurpValida(curp)) {
+            etCurp.error = "La CURP solo debe contener caracteres alfanuméricos"
+            etCurp.requestFocus()
+            return
+        }
+
+        if (!soloLetras(nombre)) {
+            etNombre.error = "El nombre solo debe contener letras"
+            etNombre.requestFocus()
+            return
+        }
+
+        if (!soloLetras(apellidos)) {
+            etApellidos.error = "Los apellidos solo deben contener letras"
+            etApellidos.requestFocus()
+            return
+        }
+
         val ingreso = ingresoTexto.toDoubleOrNull()
         if (ingreso == null) {
             Toast.makeText(this, "El ingreso debe ser numérico", Toast.LENGTH_SHORT).show()
@@ -109,11 +126,19 @@ class MainActivity : AppCompatActivity() {
         solicitud.ingreso = ingreso
         solicitud.tipoBeca = tipoBeca
 
-        if (solicitud.validarIngreso()) {
+        val esApto = solicitud.validarIngreso()
+
+        SolicitudRepository.agregarSolicitud(solicitud)
+
+        if (esApto) {
+            tvResultado.text = "Estado: apto para la beca $tipoBeca"
+            tvResultado.setBackgroundColor(Color.parseColor("#DCFCE7"))
+            tvResultado.setTextColor(Color.parseColor("#166534"))
             mostrarNotificacion()
-            Toast.makeText(this, "Apto para la beca $tipoBeca", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "No apto para la beca seleccionada", Toast.LENGTH_LONG).show()
+            tvResultado.text = "Estado: no apto para la beca $tipoBeca"
+            tvResultado.setBackgroundColor(Color.parseColor("#FEE2E2"))
+            tvResultado.setTextColor(Color.parseColor("#991B1B"))
         }
     }
 
@@ -124,19 +149,18 @@ class MainActivity : AppCompatActivity() {
         etDomicilio.text.clear()
         etIngreso.text.clear()
         spTipoBeca.setSelection(0)
-        etCurp.requestFocus()
+        tvResultado.text = "Estado: pendiente"
+        tvResultado.setBackgroundColor(android.graphics.Color.parseColor("#DBEAFE"))
+        tvResultado.setTextColor(android.graphics.Color.parseColor("#1D4ED8"))
     }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "canal_beca",
-                "Canal de becas",
+                "Canal de beca",
                 NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Notificaciones para solicitudes de beca"
-            }
-
+            )
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
@@ -155,24 +179,20 @@ class MainActivity : AppCompatActivity() {
     private fun mostrarNotificacion() {
         val intentRegistro = Intent(this, RegistroActivity::class.java)
         val pendingRegistro = PendingIntent.getActivity(
-            this,
-            100,
-            intentRegistro,
+            this, 1, intentRegistro,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val intentInformes = Intent(this, InformesActivity::class.java)
         val pendingInformes = PendingIntent.getActivity(
-            this,
-            101,
-            intentInformes,
+            this, 2, intentInformes,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val builder = NotificationCompat.Builder(this, "canal_beca")
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Solicitud aprobada")
-            .setContentText("Selecciona una opción: Registro o Informes")
+            .setContentText("Elige Registro o Informes")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .addAction(android.R.drawable.ic_menu_my_calendar, "Registro", pendingRegistro)
@@ -181,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
         ) {
-            NotificationManagerCompat.from(this).notify(1, builder.build())
+            NotificationManagerCompat.from(this).notify(100, builder.build())
         }
     }
 }
